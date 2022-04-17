@@ -1,5 +1,6 @@
 import math
 import operator as op
+from pprint import pprint
 
 def tokenize(s):
     return (s
@@ -65,12 +66,18 @@ def build_default_env():
     })
     return env
 
+DEBUG = True
 DEFAULT_ENV = build_default_env()
 
 def eval(exp, env=DEFAULT_ENV):
+    if DEBUG:
+        print(exp)
     if isinstance(exp, str):
-        return env[exp]
-    elif isinstance(exp, int) or isinstance(exp, float):
+        if DEBUG:
+            val = env[exp]
+            print(f"str: {exp} = {val}")
+        return val
+    elif isinstance(exp, (int, float)):
         return exp
     elif exp[0] == "if":
         _just_the_word_if_, test, conseq, default = exp
@@ -84,11 +91,26 @@ def eval(exp, env=DEFAULT_ENV):
         args = [eval(arg, env) for arg in exp[1:]]
         return proc(*args)
 
+def repl(prompt='lis.py> '):
+    while True:
+        val = eval(parse(input(prompt)))
+        if val is not None: 
+            print(schemestr(val))
 
-code = """
-        (begin 
-            (define r 10)
-            (* pi (* r r))
-        )
-        """
-print(eval(parse(code)))
+def schemestr(exp):
+    if isinstance(exp, list):
+        return '(' + ' '.join(map(schemestr, exp)) + ')' 
+    else:
+        return str(exp)
+
+if __name__ == "__main__":
+    code = """
+            (begin 
+                (define r 10)
+                (* pi (* r r))
+            )
+            """
+    ast = parse(code)
+    pprint(ast)
+    print(eval(ast))
+    #repl()
