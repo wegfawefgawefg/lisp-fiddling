@@ -79,6 +79,8 @@ def eval(exp, env=DEFAULT_ENV):
         return val
     elif isinstance(exp, (int, float)):
         return exp
+
+    ''' pull out the first and rest maybe?'''
     elif exp[0] == "if":
         _just_the_word_if_, test, conseq, default = exp
         exp2 = conseq if test else default
